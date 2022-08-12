@@ -23,24 +23,25 @@
 // SOFTWARE.
 
 // PLUGIN: protoc-gen-gokit-micro
-//		VERSION : v0.0.1-alpha
-//		GIT TAG : v0.0.1-alpha
-//		GIT HASH : 3db443bb4aaf6b40ed5408edfa9db4a1cfa3a014
+//		VERSION : v0.0.1-alpha-1-gb9cf26b
+//		GIT TAG : v0.0.1-alpha-1-gb9cf26b
+//		GIT HASH : b9cf26b42671c569051d633fd8c790a87dd2caaf
 //		BUILDER VERSION : go version go1.16.5 linux/amd64
-//		BUILD TIME: : 2022-08-11 17:40:17
+//		BUILD TIME: : 2022-08-12 10:13:03
 
-// create time : 2022-08-11 18:01:35.61682944 +0800 CST m=+0.010033654
+// create time : 2022-08-12 10:13:09.875835358 +0800 CST m=+0.011028541
 
 package calculate
 
 import (
-	common "/invoker/http/common"
-	calculate "/invoker/protocol/calculate"
-	gin "/middlewares/transport/http/gin"
-	common1 "/transport/gin/common"
 	context "context"
 	json "encoding/json"
 	endpoint "github.com/go-kit/kit/endpoint"
+	consul "github.com/go-kit/kit/sd/consul"
+	http2 "github.com/go-kit/kit/transport/http"
+	http3 "github.com/leewckk/go-kit-micro-service/middlewares/endpoint/http"
+	http1 "github.com/leewckk/go-kit-micro-service/middlewares/transport/http"
+	calculate "micro-client-sample/invoker/protocol/calculate"
 	http "net/http"
 )
 
@@ -50,9 +51,9 @@ func EncodeCalculateAddRequest(ctx context.Context, req *http.Request, request i
 	/// TODO
 
 	pattern := req.URL.Path
-	pattern = gin.MarshalPattern(pattern, request)
+	pattern = http1.MarshalPattern(pattern, request)
 	req.URL.Path = pattern
-	return common1.EncodeJSONRequest(ctx, req, request)
+	return http1.EncodeJSONRequest(ctx, req, request)
 }
 
 //// THIS IS FOR CLIENT INVKE SERVICE REQUEST ENCODE
@@ -61,9 +62,9 @@ func EncodeCalculateAdd2Request(ctx context.Context, req *http.Request, request 
 	/// TODO
 
 	pattern := req.URL.Path
-	pattern = gin.MarshalPattern(pattern, request)
+	pattern = http1.MarshalPattern(pattern, request)
 	req.URL.Path = pattern
-	return common1.EncodeJSONRequest(ctx, req, request)
+	return http1.EncodeJSONRequest(ctx, req, request)
 }
 
 ////
@@ -100,9 +101,9 @@ func EncodeMessagingGetMessageRequest(ctx context.Context, req *http.Request, re
 	/// TODO
 
 	pattern := req.URL.Path
-	pattern = gin.MarshalPattern(pattern, request)
+	pattern = http1.MarshalPattern(pattern, request)
 	req.URL.Path = pattern
-	return common1.EncodeJSONRequest(ctx, req, request)
+	return http1.EncodeJSONRequest(ctx, req, request)
 }
 
 ////
@@ -121,25 +122,25 @@ func DecodeMessagingGetMessageResponse(ctx context.Context, resp *http.Response)
 
 ////
 
-func MakeCalculateAddClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeCalculateAddClientEndpoint(serverName string, client consul.Client, opts ...http2.ClientOption) endpoint.Endpoint {
 	enc := EncodeCalculateAddRequest
 	dec := DecodeCalculateAddResponse
 	api := "/v1/calculate"
 	httpMethod := "POST"
-	return common.MakeClientEndpoint(serverName, httpMethod, api, enc, dec)
+	return http3.MakeClientEndpoint(client, serverName, httpMethod, api, enc, dec, opts...)
 }
-func MakeCalculateAdd2ClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeCalculateAdd2ClientEndpoint(serverName string, client consul.Client, opts ...http2.ClientOption) endpoint.Endpoint {
 	enc := EncodeCalculateAdd2Request
 	dec := DecodeCalculateAdd2Response
 	api := "/v1/calculate2"
 	httpMethod := "POST"
-	return common.MakeClientEndpoint(serverName, httpMethod, api, enc, dec)
+	return http3.MakeClientEndpoint(client, serverName, httpMethod, api, enc, dec, opts...)
 }
 
-func MakeMessagingGetMessageClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeMessagingGetMessageClientEndpoint(serverName string, client consul.Client, opts ...http2.ClientOption) endpoint.Endpoint {
 	enc := EncodeMessagingGetMessageRequest
 	dec := DecodeMessagingGetMessageResponse
 	api := "/v1/messages/:messageId"
 	httpMethod := "GET"
-	return common.MakeClientEndpoint(serverName, httpMethod, api, enc, dec)
+	return http3.MakeClientEndpoint(client, serverName, httpMethod, api, enc, dec, opts...)
 }

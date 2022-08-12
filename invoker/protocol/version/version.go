@@ -23,13 +23,13 @@
 // SOFTWARE.
 
 // PLUGIN: protoc-gen-gokit-micro
-//		VERSION : v0.0.1-alpha
-//		GIT TAG : v0.0.1-alpha
-//		GIT HASH : 3db443bb4aaf6b40ed5408edfa9db4a1cfa3a014
+//		VERSION : v0.0.1-alpha-1-gb9cf26b
+//		GIT TAG : v0.0.1-alpha-1-gb9cf26b
+//		GIT HASH : b9cf26b42671c569051d633fd8c790a87dd2caaf
 //		BUILDER VERSION : go version go1.16.5 linux/amd64
-//		BUILD TIME: : 2022-08-11 17:40:17
+//		BUILD TIME: : 2022-08-12 10:13:03
 
-// create time : 2022-08-11 18:01:35.616098139 +0800 CST m=+0.009302356
+// create time : 2022-08-12 10:13:09.874541365 +0800 CST m=+0.009734537
 
 package version
 

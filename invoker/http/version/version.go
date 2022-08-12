@@ -23,24 +23,25 @@
 // SOFTWARE.
 
 // PLUGIN: protoc-gen-gokit-micro
-//		VERSION : v0.0.1-alpha
-//		GIT TAG : v0.0.1-alpha
-//		GIT HASH : 3db443bb4aaf6b40ed5408edfa9db4a1cfa3a014
+//		VERSION : v0.0.1-alpha-1-gb9cf26b
+//		GIT TAG : v0.0.1-alpha-1-gb9cf26b
+//		GIT HASH : b9cf26b42671c569051d633fd8c790a87dd2caaf
 //		BUILDER VERSION : go version go1.16.5 linux/amd64
-//		BUILD TIME: : 2022-08-11 17:40:17
+//		BUILD TIME: : 2022-08-12 10:13:03
 
-// create time : 2022-08-11 18:01:35.615997963 +0800 CST m=+0.009202181
+// create time : 2022-08-12 10:13:09.874366906 +0800 CST m=+0.009560058
 
 package version
 
 import (
-	common "/invoker/http/common"
-	version "/invoker/protocol/version"
-	gin "/middlewares/transport/http/gin"
-	common1 "/transport/gin/common"
 	context "context"
 	json "encoding/json"
 	endpoint "github.com/go-kit/kit/endpoint"
+	consul "github.com/go-kit/kit/sd/consul"
+	http2 "github.com/go-kit/kit/transport/http"
+	http3 "github.com/leewckk/go-kit-micro-service/middlewares/endpoint/http"
+	http1 "github.com/leewckk/go-kit-micro-service/middlewares/transport/http"
+	version "micro-client-sample/invoker/protocol/version"
 	http "net/http"
 )
 
@@ -50,9 +51,9 @@ func EncodeVersionServiceGetRequest(ctx context.Context, req *http.Request, requ
 	/// TODO
 
 	pattern := req.URL.Path
-	pattern = gin.MarshalPattern(pattern, request)
+	pattern = http1.MarshalPattern(pattern, request)
 	req.URL.Path = pattern
-	return common1.EncodeJSONRequest(ctx, req, request)
+	return http1.EncodeJSONRequest(ctx, req, request)
 }
 
 ////
@@ -71,10 +72,10 @@ func DecodeVersionServiceGetResponse(ctx context.Context, resp *http.Response) (
 
 ////
 
-func MakeVersionServiceGetClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeVersionServiceGetClientEndpoint(serverName string, client consul.Client, opts ...http2.ClientOption) endpoint.Endpoint {
 	enc := EncodeVersionServiceGetRequest
 	dec := DecodeVersionServiceGetResponse
 	api := "/v1/version"
 	httpMethod := "GET"
-	return common.MakeClientEndpoint(serverName, httpMethod, api, enc, dec)
+	return http3.MakeClientEndpoint(client, serverName, httpMethod, api, enc, dec, opts...)
 }

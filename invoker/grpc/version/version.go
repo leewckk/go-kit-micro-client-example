@@ -23,23 +23,25 @@
 // SOFTWARE.
 
 // PLUGIN: protoc-gen-gokit-micro
-//		VERSION : v0.0.1-alpha
-//		GIT TAG : v0.0.1-alpha
-//		GIT HASH : 3db443bb4aaf6b40ed5408edfa9db4a1cfa3a014
+//		VERSION : v0.0.1-alpha-1-gb9cf26b
+//		GIT TAG : v0.0.1-alpha-1-gb9cf26b
+//		GIT HASH : b9cf26b42671c569051d633fd8c790a87dd2caaf
 //		BUILDER VERSION : go version go1.16.5 linux/amd64
-//		BUILD TIME: : 2022-08-11 17:40:17
+//		BUILD TIME: : 2022-08-12 10:13:03
 
-// create time : 2022-08-11 18:01:35.615827369 +0800 CST m=+0.009031601
+// create time : 2022-08-12 10:13:09.874098762 +0800 CST m=+0.009291946
 
 package version
 
 import (
-	common "/invoker/grpc/common"
-	version1 "/invoker/protocol/version"
-	version "/pb/golang/pkg/version"
 	context "context"
 	fmt "fmt"
 	endpoint "github.com/go-kit/kit/endpoint"
+	consul "github.com/go-kit/kit/sd/consul"
+	grpc "github.com/go-kit/kit/transport/grpc"
+	grpc1 "github.com/leewckk/go-kit-micro-service/middlewares/endpoint/grpc"
+	version1 "micro-client-sample/invoker/protocol/version"
+	version "micro-client-sample/pb/golang/pkg/version"
 	reflect "reflect"
 )
 
@@ -73,11 +75,11 @@ func DecodeVersionServiceGetResponse(ctx context.Context, resp interface{}) (int
 
 ////
 
-func MakeVersionServiceGetClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeVersionServiceGetClientEndpoint(serverName string, client consul.Client, opts ...grpc.ClientOption) endpoint.Endpoint {
 	var reply version.VersionResponse
 	enc := EncodeVersionServiceGetRequest
 	dec := DecodeVersionServiceGetResponse
 	serviceName := "version.VersionService"
 	methodName := "Get"
-	return common.MakeClientEndpoint(serverName, serviceName, methodName, enc, dec, &reply)
+	return grpc1.MakeClientEndpoint(client, serverName, serviceName, methodName, enc, dec, &reply, opts...)
 }

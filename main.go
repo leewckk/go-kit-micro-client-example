@@ -22,8 +22,42 @@
 
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+	"time"
+
+	"github.com/leewckk/go-kit-micro-service/discovery"
+	"github.com/leewckk/go-kit-micro-service/middlewares/tracing/report"
+)
+
+func init() {
+}
 
 func main() {
+	server := flag.String("server", "micro-service", "invoke server name")
+	center := flag.String("center", "127.0.0.1:8500", "service discovery center API")
+	tracing := flag.String("tracing", "http://localhost:9411/api/v2/spans", "service API tracing")
+	flag.Parse()
+
+	if *server == "" || *center == "" || *tracing == "" {
+		flag.Usage()
+		return
+	}
+	sd := discovery.NewClient(*center)
 	fmt.Println(FullVersion())
+
+	if "" != *tracing {
+		reporter := report.NewZipkinReporter(*tracing)
+		InvokeGetVersionGRPC(*server, sd, reporter)
+		InvokeGetVersionHTTP(*server, sd, reporter)
+		InvokeCalculateAddGRPC(*server, sd, reporter)
+		InvokeCalculateAddHTTP(*server, sd, reporter)
+	}
+
+	select {
+	case <-time.After(3 * time.Second):
+		break
+	}
+	fmt.Println("exit 0")
 }

@@ -23,23 +23,25 @@
 // SOFTWARE.
 
 // PLUGIN: protoc-gen-gokit-micro
-//		VERSION : v0.0.1-alpha
-//		GIT TAG : v0.0.1-alpha
-//		GIT HASH : 3db443bb4aaf6b40ed5408edfa9db4a1cfa3a014
+//		VERSION : v0.0.1-alpha-1-gb9cf26b
+//		GIT TAG : v0.0.1-alpha-1-gb9cf26b
+//		GIT HASH : b9cf26b42671c569051d633fd8c790a87dd2caaf
 //		BUILDER VERSION : go version go1.16.5 linux/amd64
-//		BUILD TIME: : 2022-08-11 17:40:17
+//		BUILD TIME: : 2022-08-12 10:13:03
 
-// create time : 2022-08-11 18:01:35.616204898 +0800 CST m=+0.009409107
+// create time : 2022-08-12 10:13:09.874656916 +0800 CST m=+0.009850083
 
 package calculate
 
 import (
-	common "/invoker/grpc/common"
-	calculate "/invoker/protocol/calculate"
-	calculate1 "/pb/golang/pkg/calculate"
 	context "context"
 	fmt "fmt"
 	endpoint "github.com/go-kit/kit/endpoint"
+	consul "github.com/go-kit/kit/sd/consul"
+	grpc "github.com/go-kit/kit/transport/grpc"
+	grpc1 "github.com/leewckk/go-kit-micro-service/middlewares/endpoint/grpc"
+	calculate "micro-client-sample/invoker/protocol/calculate"
+	calculate1 "micro-client-sample/pb/golang/pkg/calculate"
 	reflect "reflect"
 )
 
@@ -417,28 +419,28 @@ func DecodeMessagingGetMessageResponse(ctx context.Context, resp interface{}) (i
 
 ////
 
-func MakeCalculateAddClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeCalculateAddClientEndpoint(serverName string, client consul.Client, opts ...grpc.ClientOption) endpoint.Endpoint {
 	var reply calculate1.CalculateResult
 	enc := EncodeCalculateAddRequest
 	dec := DecodeCalculateAddResponse
 	serviceName := "calculate.Calculate"
 	methodName := "Add"
-	return common.MakeClientEndpoint(serverName, serviceName, methodName, enc, dec, &reply)
+	return grpc1.MakeClientEndpoint(client, serverName, serviceName, methodName, enc, dec, &reply, opts...)
 }
-func MakeCalculateAdd2ClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeCalculateAdd2ClientEndpoint(serverName string, client consul.Client, opts ...grpc.ClientOption) endpoint.Endpoint {
 	var reply calculate1.CalculateResult
 	enc := EncodeCalculateAdd2Request
 	dec := DecodeCalculateAdd2Response
 	serviceName := "calculate.Calculate"
 	methodName := "Add2"
-	return common.MakeClientEndpoint(serverName, serviceName, methodName, enc, dec, &reply)
+	return grpc1.MakeClientEndpoint(client, serverName, serviceName, methodName, enc, dec, &reply, opts...)
 }
 
-func MakeMessagingGetMessageClientEndpoint(serverName string) endpoint.Endpoint {
+func MakeMessagingGetMessageClientEndpoint(serverName string, client consul.Client, opts ...grpc.ClientOption) endpoint.Endpoint {
 	var reply calculate1.GetMessageResponse
 	enc := EncodeMessagingGetMessageRequest
 	dec := DecodeMessagingGetMessageResponse
 	serviceName := "calculate.Messaging"
 	methodName := "GetMessage"
-	return common.MakeClientEndpoint(serverName, serviceName, methodName, enc, dec, &reply)
+	return grpc1.MakeClientEndpoint(client, serverName, serviceName, methodName, enc, dec, &reply, opts...)
 }
